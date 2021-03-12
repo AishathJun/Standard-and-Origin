@@ -1,0 +1,23 @@
+{
+  "name": "sno-website",
+  "version": "1.0.0",
+  "description": "Website for Standard and Origin mv",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AishathJun/Standard-and-Origin.git"
+  },
+  "keywords": [
+    "website"
+  ],
+  "author": "AishathJun, z80lives",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AishathJun/Standard-and-Origin/issues"
+  },
+  "homepage": "https://github.com/AishathJun/Standard-and-Origin#readme"
+}
