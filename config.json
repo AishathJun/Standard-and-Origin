@@ -1,0 +1,8 @@
+{
+    "mysql": {
+        "database": "sno",
+        "user": "user",
+        "password": "1234",
+        "host": "localhost"
+    }
+}

@@ -25,3 +25,8 @@ coverage
 
 # Benchmarking
 benchmarks/graphs
+
+
+#server configs
+.configs
+config.js
