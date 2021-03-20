@@ -1,24 +1,5 @@
 const brandService = require("./services/brand.service.js");
-
-
-function responseProvider(res){
-    //TODO: Only show error if debug mode is enable. Hide error in production.
-    const defaultFail = (msg, code=500, error=null) => {
-        res.status(code).json({
-            "message": msg,
-            error
-        });
-    };
-
-    const defaultSuccess = data => {
-        res.json({
-            message: "Query success",
-            data: data
-        });
-    };
-
-    return {defaultFail, defaultSuccess};
-};
+const responseProvider = require("./utils/response.js");
 
 const fetch = (req, res) => {
     const db = req.app.get("db");
@@ -53,7 +34,7 @@ const create = (req, res) => {
     const {name, origin} = req.body;
 
     const success = data => {
-        res.json({
+        res.status(201).json({
             "message": "Brand created successfully",
             "body": req.body
         });

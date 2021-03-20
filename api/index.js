@@ -1,13 +1,21 @@
 const express = require("express");
 const router = express.Router();
 
+const validatorModule = require("./middleware/validator.js");
+router.use(validatorModule);
+
+
+
+
 const categoryController = require("./category.js")(router);
 const brandController = require("./brand.js")(router);
-
+const pictureController = require("./picture.js")(router); //for debug purpose
+const productController = require("./product.js")(router);
 
 
 //router.use(express.urlencoded({extended: true}));
 //router.use(express.json({type: "*/*"}));
+
 
 router.get("/", function(req, res){
     const db = req.app.get('db');
@@ -19,6 +27,21 @@ router.get("/", function(req, res){
 });
 
 
+//TODO: Do not show trace stack on the production server
+router.use(function (err, req, res, next){
+    res.json({
+        name: err.name,
+        message: err.message
+    })
+   /* res.json({
+        name: err.name,
+        message: err.message,
+        file: err.fileName,
+        line: err.lineNumber,
+        col: err.columnName,
+        stack: err.stack
+    })*/
+});
 
 /**
  * 404 - page not found

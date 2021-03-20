@@ -34,19 +34,10 @@ function brandServices(db){
 
         const inVals = {name, origin};
 
-        //number of values that have been passed by the caller and is not undefined
-        //const numInVals = Object.values(x).filter(e => e!=undefined).length;
+        const {sql, sql_input} = queryHandler.updateQueryFormat(_id, "brand", inVals);
+        const query = db.format(sql, sql_input);
 
-        const entryVals= Object.entries(inVals).filter(e => e[1] != undefined);
-        const queryPlaceholders = entryVals.map(e => "?? = ?").join(",");
-        const sql = "UPDATE `brand` SET "+queryPlaceholders + " WHERE _id = ?; ";
-        const queryVals = [].concat(...entryVals);
-        queryVals.push(_id);
-
-
-        const query = db.format(sql, queryVals);
-
-        db.query(query, queryHandler.retrieveQuery(onSuccess, onFail) );
+        db.query(query, queryHandler.updateQuery(onSuccess, onFail) );
     };
 
 

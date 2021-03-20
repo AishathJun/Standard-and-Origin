@@ -22,7 +22,6 @@ app.use("/api", webapi);
 
 //provide databse service as 'db'
 app.set("db", dbService.service);
-app.set("helpers", dbService.helpers);
 
 
 //redirect base url to homepage.

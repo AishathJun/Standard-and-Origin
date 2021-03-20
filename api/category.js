@@ -1,26 +1,23 @@
 const categoryService = require("./services/category.service.js");
+const responseProvider = require("./utils/response.js");
+
 
 const listCategory = (req, res) => {
     const db = req.app.get("db");
-    const success = (data) => {
-        res.json({
-            message: "Successfully retrieved",
-            data: data
-        });
-    };
-    const failure = (msg) => {
-        res.json({
-            message: msg
-        });
-    }
+    const rp = responseProvider(res);
 
     categoryService(db)
-        .findAll(success, failure);
+        .findAll()
+        .then(rp.default.success, rp.default.failure);
 };
 
 
 const createCategory = (req, res) => {
     const db = req.app.get('db');
+    const rp = responseProvider(res);
+
+    const {name, pics, cost} = req.body;
+
     const success = (insertId)=> {
             res.json({
                 "message": "Successfully created",
@@ -37,14 +34,55 @@ const createCategory = (req, res) => {
 
     categoryService(db)
         .create({
-            label: "beverages",
-            picture_url: "/assets/img/products/img3.jpg",
-            cost: 0.0,
-            tags: ""
-        },success, fail);
-}
+            name,
+            pics,
+            cost
+        })
+        .then(success, fail);
+};
+
+const findCategory = (req, res) => {
+    const db = req.app.get("db");
+    const rp = responseProvider(res).default;
+
+    const id = req.params.id;
+
+    categoryService(db)
+        .fetch(id)
+        .then(rp.success, rp.fail);
+};
+
+const updateCategory = (req, res) => {
+    const db = req.app.get("db");
+    const rp = responseProvider(res).default;
+
+    const id = req.params.id;
+    const vals = req.body;
+
+    categoryService(db)
+        .update(id, vals)
+        //.then(r=> categoryService(db))
+        //.then(r => r.fetch(id))
+        .then(rp.success)
+        .catch(rp.fail);
+};
+
+const deleteCategory = (req, res) => {
+    const db = req.app.get("db");
+    const rp = responseProvider(res).default;
+
+    const id = req.params.id;
+
+    categoryService(db)
+        .remove(id)
+        .then(rp.success)
+        .catch(rp.fail);
+};
 
 module.exports = function(router){
     router.get("/category", listCategory);
+    router.get("/category/:id", findCategory);
     router.post("/category", createCategory);
+    router.post("/category/:id", updateCategory);
+    router.delete("/category/:id", deleteCategory);
 };

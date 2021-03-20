@@ -2,7 +2,6 @@ const handle_db_error = (db) => (error, fail) => {
     if(error){
         if(db)
             db.rollback();
-        console.log(error);
         var errorMsg = error.toString();
 
         if(error.code && error.errno){
@@ -17,7 +16,9 @@ const handle_db_error = (db) => (error, fail) => {
                 break;
             }
         }
-        fail("Database Error: "+ errorMsg, 500, error);
+
+        error.return_code = 500;
+        fail(error);
         return true;
     }else{
         return false;
