@@ -1178,11 +1178,11 @@ section {
 }
 
 .portfolio #portfolio-flters li:hover, .portfolio #portfolio-flters li.filter-active {
-  color: #ef6603;
+  color: #C70039;
 }
 
 .portfolio #portfolio-flters li.filter-active::before, .portfolio #portfolio-flters li.filter-active::after {
-  color: #ef6603;
+  color: #C70039;
 }
 
 .portfolio .portfolio-item {
@@ -1219,8 +1219,8 @@ section {
 }
 
 .portfolio .portfolio-item .portfolio-info p {
-  color: #fedac0;
-  font-size: 14px;
+  color: #fff;
+  font-size: 12px;
   margin-bottom: 0;
 }
 
@@ -1270,6 +1270,7 @@ section {
 .portfolio .portfolio-item:hover .portfolio-info {
   opacity: 1;
 }
+
 
 /*--------------------------------------------------------------
 # Portfolio Details
