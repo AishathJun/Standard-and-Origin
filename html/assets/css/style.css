@@ -93,7 +93,7 @@ h1, h2, h3, h4, h5, h6 {
 #header .logo {
   overflow: hidden;
   padding: 16px 30px 12px 30px;
-  background: #C70039;
+  background: #fff;
 }
 
 #header .logo h1 {
@@ -119,10 +119,10 @@ h1, h2, h3, h4, h5, h6 {
   #header {
     box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
     top: 0;
-    background: #C70039;
+    background: #fff;
   }
   #header.header-scrolled, #header .header-container {
-    background: #C70039;
+    background: #fff;
   }
   #header .logo {
     padding-left: 0;
@@ -144,7 +144,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .navbar ul {
   margin: 0;
-  margin-right: 15px;
+  margin-right: 10px;
   padding: 0;
   display: flex;
   list-style: none;
@@ -246,20 +246,32 @@ h1, h2, h3, h4, h5, h6 {
   visibility: visible;
 }
 
-@media (max-width: 1366px) {
-  .navbar .dropdown .dropdown ul {
-    left: -90%;
-  }
-  .navbar .dropdown .dropdown:hover > ul {
-    left: -100%;
-  }
+/* Style the search box inside the navigation bar */
+.navbar input[type=text] {
+  border: 2px solid #C70039;
+  border-radius: 4px;
+  padding:5px;
+  margin-right: 15px;
+}
+
+.navbar button{
+  font-size: 18px;
+  display: inline-block;
+  background: #C70039;
+  color: #fff;
+  padding: 0px 5px 6px 2px;
+  border-radius: 20%;
+  text-align: center;
+  width: 35px;
+  height: 35px;
+  border: none;
 }
 
 /**
 * Mobile Navigation
 */
 .mobile-nav-toggle {
-  color: #fff;
+  color: #C70039;
   font-size: 28px;
   cursor: pointer;
   display: none;
@@ -351,6 +363,27 @@ h1, h2, h3, h4, h5, h6 {
 
 .navbar-mobile .dropdown > .dropdown-active {
   display: block;
+}
+
+/* Style the search box inside the navigation bar */
+.navbar-mobile input[type=text] {
+  border: 2px solid  #C70039;
+  border-radius: 4px;
+  padding:5px;
+  width: 92%;
+}
+
+.navbar-mobile button{
+  font-size: 20px;
+  display: inline-block;
+  background: #C70039;
+  color: #fff;
+  padding: 0px 5px 6px 2px;
+  border-radius: 20%;
+  text-align: center;
+  width: 57px;
+  height: 37px;
+  border: none;
 }
 
 /*--------------------------------------------------------------
@@ -1145,11 +1178,11 @@ section {
 }
 
 .portfolio #portfolio-flters li:hover, .portfolio #portfolio-flters li.filter-active {
-  color: #ef6603;
+  color: #C70039;
 }
 
 .portfolio #portfolio-flters li.filter-active::before, .portfolio #portfolio-flters li.filter-active::after {
-  color: #ef6603;
+  color: #C70039;
 }
 
 .portfolio .portfolio-item {
@@ -1186,8 +1219,8 @@ section {
 }
 
 .portfolio .portfolio-item .portfolio-info p {
-  color: #fedac0;
-  font-size: 14px;
+  color: #fff;
+  font-size: 12px;
   margin-bottom: 0;
 }
 
@@ -1237,6 +1270,7 @@ section {
 .portfolio .portfolio-item:hover .portfolio-info {
   opacity: 1;
 }
+
 
 /*--------------------------------------------------------------
 # Portfolio Details
