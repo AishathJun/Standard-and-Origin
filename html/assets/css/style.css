@@ -1142,49 +1142,6 @@ section {
 /*--------------------------------------------------------------
 # Portfolio
 --------------------------------------------------------------*/
-.portfolio #portfolio-flters {
-  list-style: none;
-  margin-bottom: 20px;
-}
-
-.portfolio #portfolio-flters li {
-  cursor: pointer;
-  display: inline-block;
-  margin: 0 0 10px 10px;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1;
-  text-transform: uppercase;
-  color: #444444;
-  transition: all 0.3s ease-in-out;
-}
-
-.portfolio #portfolio-flters li::before {
-  content: "[";
-  margin-right: 6px;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 400;
-  transition: all 0.3s ease-in-out;
-}
-
-.portfolio #portfolio-flters li::after {
-  content: "]";
-  margin-left: 6px;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 400;
-  transition: all 0.3s ease-in-out;
-}
-
-.portfolio #portfolio-flters li:hover, .portfolio #portfolio-flters li.filter-active {
-  color: #C70039;
-}
-
-.portfolio #portfolio-flters li.filter-active::before, .portfolio #portfolio-flters li.filter-active::after {
-  color: #C70039;
-}
-
 .portfolio .portfolio-item {
   margin-bottom: 30px;
 }
@@ -1264,7 +1221,7 @@ section {
 }
 
 .portfolio .portfolio-item:hover .portfolio-img img {
-  transform: scale(1.2);
+  transform: translateY(6px);
 }
 
 .portfolio .portfolio-item:hover .portfolio-info {

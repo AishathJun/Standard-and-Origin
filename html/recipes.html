@@ -46,7 +46,12 @@
             <li><a class="nav-link scrollto" href="home.html#about">About Us</a></li>
             <li><a class="nav-item" href="product-categories.html">Products</a></li>
             <li><a class="nav-item" href="outlets.html">Outlets</a></li>
-            <li><a class="nav-item active" href="news.html">News</a></li>
+            <li class="dropdown"><a href="#"><span>More</span> <i class="bi bi-chevron-down"></i></a>
+              <ul>
+                <li><a class="nav-item" href="newsletter.html">Newsletters</a></li>
+                <li><a class="nav-item active" href="recipes.html">Recipes</a></li>
+              </ul>
+            </li>
             <li><a class="nav-link scrollto" href="home.html#contact">Contact Us</a></li>
             <!-- FILTER ALL ITEMS -->
             <form class="" action="product-list.html" method="post">
@@ -71,10 +76,11 @@
       <div class="container">
 
         <div class="d-flex justify-content-between align-items-center">
-          <h2>News</h2>
+          <h2>Recipes</h2>
           <ol>
             <li><a href="home.html">Home</a></li>
-            <li>News</li>
+            <li>More</li>
+            <li>Recipes</li>
           </ol>
         </div>
       </div>
@@ -84,41 +90,20 @@
     <!-- ======= Portfolio Section ======= -->
     <section id="portfolio" class="portfolio">
       <div class="container">
-
-        <ul id="portfolio-flters" class="d-flex justify-content-end" data-aos="fade-up">
-          <li data-filter="*" class="filter-active">All</li>
-          <li data-filter=".filter-app">News</li>
-          <li data-filter=".filter-card">Promotions</li>
-          <li data-filter=".filter-web">Recipes</li>
-        </ul>
-
         <div class="row portfolio-container" data-aos="fade-up">
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-app">
-            <div class="portfolio-img"><img src="assets/img/news/news1.png" class="img-fluid" alt=""></div>
-            <div class="portfolio-info">
-              <h4>Cocotine's Frozen Pasteurized Egg Yolks Sugar</h4>
-              <p>Perfect for making creams, icing, quiches, pastries and mayonnaise. They contain
-              no artificial colors or preservatives. </p>
-            </div>
+          <div class="col-lg-4 col-md-6 portfolio-item">
+            <div class="portfolio-img"><img src="assets/img/recipe/1.png" class="img-fluid" alt=""></div>
           </div>
 
-          <div class="col-lg-4 col-md-6 portfolio-item filter-web">
-            <div class="portfolio-img"><img src="assets/img/news/news2.png" class="img-fluid" alt=""></div>
-            <div class="portfolio-info">
-              <h4>Santal's 100% Vegetable Drinks</h4>
-              <p>Introducing a new product----</p>
-            </div>
+          <div class="col-lg-4 col-md-6 portfolio-item">
+            <div class="portfolio-img"><img src="assets/img/recipe/2.png" class="img-fluid" alt=""></div>
           </div>
 
-          <div class="col-lg-4 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-img"><img src="assets/img/news/news1.png" class="img-fluid" alt=""></div>
-            <div class="portfolio-info">
-              <h4>Cocotine's Frozen Pasteurized Egg Yolks Sugar</h4>
-              <p>Perfect for making creams, icing, quiches, pastries and mayonnaise. They contain
-              no artificial colors or preservatives. </p>
-            </div>
+          <div class="col-lg-4 col-md-6 portfolio-item">
+            <div class="portfolio-img"><img src="assets/img/recipe/3.png" class="img-fluid" alt=""></div>
           </div>
+
+
         </div>
       </div>
     </section><!-- End Portfolio Section -->
