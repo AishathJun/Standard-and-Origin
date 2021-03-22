@@ -1,7 +1,7 @@
 /**
  * This will not work on older browsers
  **/
-function createElement(template, data){
+function createElement(template, data=null){
     const parent_div = document.createElement("div");
     parent_div.innerHTML = template(data);
     return parent_div.firstElementChild;

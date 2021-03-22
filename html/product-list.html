@@ -10,7 +10,7 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favsno.png" rel="icon">
+  <link href="assets/img/favsno.PNG" rel="icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
@@ -53,14 +53,20 @@
               </ul>
             </li>
             <li><a class="nav-link scrollto" href="home.html#contact">Contact Us</a></li>
+
             <!-- FILTER ALL ITEMS -->
-            <form class="" action="product-list.html" method="post">
-              <li><a><input type="text" placeholder="Search..">
-                    <button class="search-items" id="search-item" type="submit"><i class="bi bi-search"></i></button>
+            <!--<form class="" action="product-list.html#" method="post"> -->
+              <div>
+              <li><a><input type="text" placeholder="Search.."  >
+                  <button class="search-items" id="search-item" >
+                    <i class="bi bi-search"></i>
+                  </button>
                   </a>
               </li>
-            </form>
+              </div>
+            <!--</form>-->
             <!-- END OF FILTER ALL ITEMS -->
+
           </ul>
           <i class="bi bi-list mobile-nav-toggle"></i>
         </nav><!-- .navbar -->
@@ -92,7 +98,7 @@
         <!-- Search Bar -->
         <div class="search-container visible-xs visible-sm" id="product-search">
   				<form class="navbar-form navbar-right form" action="/" method="get">
-  					<input type="text" class="form-control" name="prod-name" placeholder="Search..." value="">
+  					<input type="text" class="form-control" name="prod-name" placeholder="Search..." value="" id="txt-search">
   					<br>
   					<select class="form-control" title="Brands" name="prod-brand" id="prod-brand">
   						<option value="0_0" title="All Brands" selected="">-- All Brands --</option>
@@ -111,7 +117,6 @@
 
               <!--Show loading if data is not loaded-->
               <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
               </div>
 
             </div>
@@ -156,12 +161,15 @@
 
   <script>
     const category_id = getParam("category_id");
+    const searchbar = document.getElementById("txt-search");
     const productContainer = document.getElementById("product-container");
+    var glob_product_list = [];
 
-    const template = ({name, url, brand, packaging, origin})=>`
+
+    const template = ({_id, name, url, brand, packaging, origin})=>`
               <div class="col-lg-4 col-md-6 mt-1" id=""> <!-- looping starts here -->
                 <div class="icon-box" data-aos="zoom-in-left">
-                  <h4 class="title" id="prod-name">${name}</a></h4>
+                  <h4 class="title" id="${_id}">${name}</a></h4>
                   <div class="icon-image">
                     <img id="prod-img" src="/${url}">
                   </div>
@@ -175,11 +183,53 @@
                 </div>
               </div> <!-- looping ends here -->
 `;
+    const emptyTemplate = () => `<p>Sorry. No items available</p>`;
+    
+    function redrawProductList(product_list){        
+        if(product_list.length == 0){
+            productContainer.innerHTML = ""; //clear product container first
+            productContainer.appendChild(createElement(emptyTemplate));
+        } else{
+            SNOAPI.populateContainer(productContainer, template)({data: product_list});
+        }
+    }
+
+
+    
+    //["32131", "Hello World"] .map( e => e.toLowerCase().search("wo"))
+    function search(val){
+        var product_list = glob_product_list;
+
+        if(val.length != 0){
+            product_list = glob_product_list.filter(e => {
+                const matchByName = !e.name.toLowerCase().search(val.toLowerCase());
+                const matchByOrigin = !e.origin.toLowerCase().search(val.toLowerCase());
+                const matchByBrand = !e.brand.toLowerCase().search(val.toLowerCase());
+                const matchByPackaging = !e.packaging.toLowerCase().search(val.toLowerCase());
+                return matchByName || matchByOrigin || matchByBrand || matchByPackaging;
+            });
+        }
+
+        redrawProductList(product_list);
+    }
+
+    //attach search to keyboard event
+    document.addEventListener('input', function(ev){
+        const target_id = ev.target.id;
+        if(target_id == "txt-search"){
+            const val = ev.target.value;
+            search(val);
+        }
+    });
+
 
     //if the url contains a valid category id 
     if(category_id != null){
         SNOAPI.getProducts(
-            SNOAPI.populateContainer(productContainer, template),
+            results => {
+                redrawProductList(results.data);
+                glob_product_list = results.data;
+            },
             {category_id}
         );
     }
