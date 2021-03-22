@@ -12,10 +12,13 @@ function productServices(db){
             const query = queryBuilder(db).selectAll("product", ["name", "$brand", "$pic", "packaging", "$category"]);
             db.query(query, queryHandler.retrieveQuery(success, fail));
         }else{
-            const sql = "SELECT CONVERT(`product`.`_id`, CHAR(128)) as _id, `product`.`name`, `brand`.`name` as brand, `brand`.`origin` as `origin`,  `packaging`, `category`.`name` as `category`, `picture`.`url` FROM  `product` "
+            var sql = "SELECT CONVERT(`product`.`_id`, CHAR(128)) as _id, `product`.`name`, `brand`.`name` as brand, `brand`.`origin` as `origin`,  `packaging`, `category`.`name` as `category`, `picture`.`url` FROM  `product` "
               + " INNER JOIN `picture` ON `product`.`pic` = `picture`.`_id` "
               + " INNER JOIN `brand` ON `product`.`brand` = `brand`.`_id` "
               + " INNER JOIN `category` ON `product`.`category` = `category`.`_id`";
+            if(options.category_id){
+                sql += ` WHERE \`category\`.\`_id\` = '${options.category_id}'`;
+            }
             db.query(sql, queryHandler.retrieveQuery(success, fail));
         }
     });
@@ -55,9 +58,9 @@ function productServices(db){
             //const categoryBuildQuery = qb.create("category", category_id, category);
             const categoryFetchQuery = qb.selectBy("category", [], category);
             const results = await qb.queryPromise(categoryFetchQuery);
-            console.log("results", results);
             if(results.length == 0){
                 fail("Cannot find category");
+                console.log(`Cannot find result category `, category);
                 //return;
             }else{
                 val.category = results[0]._id;
@@ -100,7 +103,7 @@ function productServices(db){
 
         Promise.all(promiseList)
             .then( (data) =>{
-                console.log("Done", data)
+                //console.log("Done", data)
                 success({
                     _id
                 });

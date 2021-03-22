@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <title>Product Test page</title>
+
+    <!-- Use semantic ui , because Im not going to write CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+  </head>
+
+  <body>
+    <h3>Products</h3>
+
+    <div class="ui column doubling stackable grid container">
+      <div class="ui link cards" id="card-container">
+        <!--category cards are populated here-->
+      </div>
+    </div>
+
+    <!-- Use jqeury and semantic ui, we wont be actually using jquery -->
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+
+
+    <!--populates the categories-->
+    <script>
+      //first we get thte category from the current url
+      //This will not work on older browser, so you might have to find alternative or use a UI framework instead.
+      const url = new URL(window.location);
+      const category_id = url.searchParams.get("category");
+
+      
+      //our card template
+      function card_template(data){
+          const parent_div = document.createElement("div");
+          const {_id, name, brand, packaging, url} = data;
+          parent_div.setAttribute("class", "ui card");
+          parent_div.innerHTML = `
+          <a class="image" href="/product-view-test.html?product=${_id}">
+            <img src="${url}">
+          </a>
+          <div class="content">
+            <h3>${name}</h3>
+            <h4>Brand: ${brand}</h4>
+            <h4>Packaging: ${packaging}</h4>
+          </div>`;
+          return parent_div;
+      };
+
+
+      //then we fetch data from server and proceed to  populate the html body 
+      fetch(`/api/product?populate=true&category_id=${category_id}`, {
+          "method": "GET",
+          "headers": {
+              "Content-Type": "application/json"
+          }
+      })
+    .then(r=>r.json())
+    .then(response => {
+        const card_container = document.getElementById("card-container");
+
+        response.data.map(data => {
+            const item = card_template(data);
+            card_container.appendChild( item );
+        });
+    })
+    .catch(err => {
+        console.error(err);
+    });            
+    </script>
+
+  </body>
+</html>

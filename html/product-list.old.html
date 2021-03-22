@@ -106,14 +106,22 @@
         <!-- ======= Products ======= -->
         <section id="prod-category" class="prod-category">
           <div class="container">
-            <div class="row" id="product-container">
-
-
-              <!--Show loading if data is not loaded-->
-              <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
-
+            <div class="row">
+              <div class="col-lg-4 col-md-6 mt-1" id=""> <!-- looping starts here -->
+                <div class="icon-box" data-aos="zoom-in-left">
+                  <h4 class="title" id="prod-name">{Product Name}</a></h4>
+                  <div class="icon-image">
+                    <img id="prod-img" src="assets/img/products/img3.jpg">
+                  </div>
+                  <br>
+                  <div class="description">
+                    <h7 id="prod-brand"><strong>Brand: </strong>{Schweppers}</h7> <br>
+                    <h7 id="prod-packing"><strong> Packing: </strong>{12 x 320ml}</h7> <br>
+                    <!-- <h7 id="prod-packing"><strong> Price: </strong>MVR{40}</h7> <br> -->
+                    <h7 id="prod-origin"><strong> Origin: </strong>{Singapore}</h7>
+                  </div>
+                </div>
+              </div> <!-- looping ends here -->
             </div>
           </div>
         </section>
@@ -151,39 +159,6 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
 
-  <!--Provides some common functions to make the scripts more readable -->
-  <script src="assets/js/api.utils.js"></script>
-
-  <script>
-    const category_id = getParam("category_id");
-    const productContainer = document.getElementById("product-container");
-
-    const template = ({name, url, brand, packaging, origin})=>`
-              <div class="col-lg-4 col-md-6 mt-1" id=""> <!-- looping starts here -->
-                <div class="icon-box" data-aos="zoom-in-left">
-                  <h4 class="title" id="prod-name">${name}</a></h4>
-                  <div class="icon-image">
-                    <img id="prod-img" src="/${url}">
-                  </div>
-                  <br>
-                  <div class="description">
-                    <h7 id="prod-brand"><strong>Brand: </strong>${brand}</h7> <br>
-                    <h7 id="prod-packing"><strong> Packing: </strong>${packaging}</h7> <br>
-                    <!-- <h7 id="prod-packing"><strong> Price: </strong>MVR{40}</h7> <br> -->
-                    <h7 id="prod-origin"><strong> Origin: </strong>${origin}</h7>
-                  </div>
-                </div>
-              </div> <!-- looping ends here -->
-`;
-
-    //if the url contains a valid category id 
-    if(category_id != null){
-        SNOAPI.getProducts(
-            SNOAPI.populateContainer(productContainer, template),
-            {category_id}
-        );
-    }
-  </script>
 </body>
 
 </html>
