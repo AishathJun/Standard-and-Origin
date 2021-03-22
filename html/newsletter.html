@@ -37,18 +37,18 @@
         <div class="logo">
           <!-- <h1 class="text-light"><a href="home.html"><span>Standard & Origin Pvt Ltd</span></a></h1> -->
           <!-- Uncomment below if you prefer to use an image logo -->
-          <a href="home.html"><img src="assets/img/snologo.png" alt="S&O" class="img-fluid"></a>
+         <a href="home.html"><img src="assets/img/snologo.png" alt="S&O" class="img-fluid"></a>
         </div>
 
         <nav id="navbar" class="navbar">
           <ul>
             <li><a class="nav-link scrollto" href="home.html#hero">Home</a></li>
             <li><a class="nav-link scrollto" href="home.html#about">About Us</a></li>
-            <li><a class="nav-item active" href="product-categories.html">Products</a></li>
+            <li><a class="nav-item" href="product-categories.html">Products</a></li>
             <li><a class="nav-item" href="outlets.html">Outlets</a></li>
             <li class="dropdown"><a href="#"><span>More</span> <i class="bi bi-chevron-down"></i></a>
               <ul>
-                <li><a class="nav-item" href="newsletter.html">Newsletters</a></li>
+                <li><a class="nav-item active" href="newsletter.html">Newsletters</a></li>
                 <li><a class="nav-item" href="recipes.html">Recipes</a></li>
               </ul>
             </li>
@@ -76,57 +76,35 @@
       <div class="container">
 
         <div class="d-flex justify-content-between align-items-center">
-          <h2>Product Type</h2>
+          <h2>Newsletters</h2>
           <ol>
             <li><a href="home.html">Home</a></li>
-            <li><a href="product-categories.html">Categories</a></li>
-            <li>Product Type</li>
+            <li>More</li>
+            <li>Newsletters</li>
           </ol>
         </div>
-
-      </div>
-    </section><!-- End Breadcrumbs -->
-
-    <section class="inner-page">
-      <div class="container">
-        <!-- Search Bar -->
-        <div class="search-container visible-xs visible-sm" id="product-search">
-  				<form class="navbar-form navbar-right form" action="/" method="get">
-  					<input type="text" class="form-control" name="prod-name" placeholder="Search..." value="">
-  					<br>
-  					<select class="form-control" title="Brands" name="prod-brand" id="prod-brand">
-  						<option value="0_0" title="All Brands" selected="">-- All Brands --</option>
-  						<option value="1_0" title="cocacola">Coca Cola Company </option> <!-- loop these -->
-  					</select>
-  					<br>
-  					<button id="search-button" class="btn btn-danger form-control" type="submit">Search</button>
-  				</form>
-  			</div>
-
-        <!-- ======= Products ======= -->
-        <section id="prod-category" class="prod-category">
-          <div class="container">
-            <div class="row">
-              <div class="col-lg-4 col-md-6 mt-1" id=""> <!-- looping starts here -->
-                <div class="icon-box" data-aos="zoom-in-left">
-                  <h4 class="title" id="prod-name">{Product Name}</a></h4>
-                  <div class="icon-image">
-                    <img id="prod-img" src="assets/img/products/img3.jpg">
-                  </div>
-                  <br>
-                  <div class="description">
-                    <h7 id="prod-brand"><strong>Brand: </strong>{Schweppers}</h7> <br>
-                    <h7 id="prod-packing"><strong> Packing: </strong>{12 x 320ml}</h7> <br>
-                    <!-- <h7 id="prod-packing"><strong> Price: </strong>MVR{40}</h7> <br> -->
-                    <h7 id="prod-origin"><strong> Origin: </strong>{Singapore}</h7>
-                  </div>
-                </div>
-              </div> <!-- looping ends here -->
-            </div>
-          </div>
-        </section>
       </div>
     </section>
+    <!-- End Breadcrumbs -->
+
+    <!-- ======= Portfolio Section ======= -->
+    <section id="portfolio" class="portfolio">
+      <div class="container">
+        <div class="row portfolio-container" data-aos="fade-up">
+          <div class="col-lg-4 col-md-6 portfolio-item">
+            <div class="portfolio-img"><img src="assets/img/newsletter/1.png" class="img-fluid" alt=""></div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 portfolio-item">
+            <div class="portfolio-img"><img src="assets/img/newsletter/2.png" class="img-fluid" alt=""></div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 portfolio-item">
+            <div class="portfolio-img"><img src="assets/img/newsletter/3.png" class="img-fluid" alt=""></div>
+          </div>
+        </div>
+      </div>
+    </section><!-- End Portfolio Section -->
 
   </main><!-- End #main -->
 
@@ -152,7 +130,6 @@
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/purecounter/purecounter.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
 
