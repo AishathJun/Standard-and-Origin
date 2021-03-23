@@ -1,4 +1,4 @@
-# OS X
+# os x
 .DS_Store*
 Icon?
 ._*
@@ -29,4 +29,4 @@ benchmarks/graphs
 
 #server configs
 .configs
-config.js
+config.json
