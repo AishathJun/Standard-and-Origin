@@ -104,8 +104,6 @@
   						<option value="0_0" title="All Brands" selected="">-- All Brands --</option>
   						<option value="1_0" title="cocacola">Coca Cola Company </option> <!-- loop these -->
   					</select>
-  					<br>
-  					<button id="search-button" class="btn btn-danger form-control" type="submit">Search</button>
   				</form>
   			</div>
 
@@ -184,8 +182,8 @@
               </div> <!-- looping ends here -->
 `;
     const emptyTemplate = () => `<p>Sorry. No items available</p>`;
-    
-    function redrawProductList(product_list){        
+
+    function redrawProductList(product_list){
         if(product_list.length == 0){
             productContainer.innerHTML = ""; //clear product container first
             productContainer.appendChild(createElement(emptyTemplate));
@@ -195,7 +193,7 @@
     }
 
 
-    
+
     //["32131", "Hello World"] .map( e => e.toLowerCase().search("wo"))
     function search(val){
         var product_list = glob_product_list;
@@ -223,7 +221,7 @@
     });
 
 
-    //if the url contains a valid category id 
+    //if the url contains a valid category id
     if(category_id != null){
         SNOAPI.getProducts(
             results => {
