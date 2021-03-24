@@ -1293,3 +1293,9 @@ section {
 .portfolio-details .portfolio-description p {
   padding: 0;
 }
+
+#openpdf{
+  color: white;
+  display:block;
+  width:100%;
+}
