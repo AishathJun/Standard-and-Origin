@@ -1,3 +1,6 @@
+data/*.xlsx
+data/*.csv
+
 # os x
 .DS_Store*
 Icon?
