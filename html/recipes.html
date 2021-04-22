@@ -54,11 +54,16 @@
             </li>
             <li><a class="nav-link scrollto" href="home.html#contact">Contact Us</a></li>
             <!-- FILTER ALL ITEMS -->
-            <form class="" action="product-list.html" method="post">
-              <li><a><input type="text" placeholder="Search..">
-                    <button class="search-items" id="search-item" type="submit"><i class="bi bi-search"></i></button>
+            <form class="" action="product-list.html" method="get"> 
+              <li><a><input type="text" placeholder="Search.."  name="search" id="search">
+                  <button class="search-items" id="search-item" >
+                    <i class="bi bi-search"></i>
+                  </button>
                   </a>
               </li>
+              <div class="dropdown-content" id="search-dropdown">
+		  <a href="#">Search all</a>
+              </div>
             </form>
             <!-- END OF FILTER ALL ITEMS -->
           </ul>

@@ -26,9 +26,10 @@ const retrieve = (req, res) => {
     const rp = responseProvider(res).default;
 
     const _id = req.params.id;
+    const populate = req.query.populate;
 
     productService(db)
-        .fetch(_id)
+        .fetch(_id, {populate})
         .then(rp.success, rp.fail);
 };
 
@@ -68,10 +69,15 @@ const list = (req, res) => {
         .then(rp.success, rp.fail);
 };
 
-module.exports = function(router){
-    router.get("/product", list);
-    router.post("/product", create);
-    router.get("/product/:id", retrieve);
-    router.post("/product/:id", update);
-    router.delete("/product/:id", _delete);
+module.exports = {
+    bind: function(router){
+	router.get("/product", list);
+	router.post("/product", create);
+	router.get("/product/:id", retrieve);
+	router.post("/product/:id", update);
+	router.delete("/product/:id", _delete);
+    },
+    controllers: {
+	list, create, retrieve, update, _delete
+    }
 };

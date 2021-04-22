@@ -36,7 +36,9 @@ const create = (req, res) => {
     const success = data => {
         res.status(201).json({
             "message": "Brand created successfully",
-            "body": req.body
+            "body": req.body,
+	    "_id": data
+	    
         });
     }
 
@@ -84,10 +86,16 @@ const remove = (req, res) => {
 };
 
 
-module.exports = function(router){
-    router.get("/brand", list);
-    router.post("/brand", create);
-    router.delete("/brand/:id", remove);
-    router.get("/brand/:id", fetch);
-    router.post("/brand/:id", update);
-}
+
+module.exports = {
+    bind: function(router){
+	router.get("/brand", list);
+	router.post("/brand", create);
+	router.delete("/brand/:id", remove);
+	router.get("/brand/:id", fetch);
+	router.post("/brand/:id", update);
+    },
+    controllers: {
+	list, create, remove, fetch, update
+    }
+};

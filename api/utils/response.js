@@ -1,6 +1,9 @@
 function responseProvider(res){
     //TODO: Only show error if debug mode is enable. Hide error in production.
-    const defaultFail = (msg, code=500, error=undefined) => {
+    var defaultCode = 500;
+    
+    const defaultFail = (msg, code=defaultCode,
+			 error=undefined) => {
 
         if(typeof(msg) == "object" && msg.sqlMessage){
             error = msg;
@@ -17,10 +20,9 @@ function responseProvider(res){
             }
             code |= msg.return_code;
             msg = msg.message
-        }
-
-
-        res.status(code).json({
+        } 			    
+			     
+        res.status(defaultCode).json({
             "message": msg,
             error
         });
@@ -40,11 +42,16 @@ function responseProvider(res){
         }
     };
 
+    const flatSuccess = data => {
+	res.json({data});
+    };
+
     return {
         defaultFail, defaultSuccess,
         default: {
             success: defaultSuccess,
-            fail: defaultFail
+            fail: defaultFail,
+	    status: code => {defaultCode = code}
         }};
 };
 

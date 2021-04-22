@@ -1,4 +1,5 @@
 const responseProvider = require("./utils/response.js");
+const path = require('path'); 
 /**
  * Use this controller only for testing purpose
  **/
@@ -55,14 +56,28 @@ const remove = (req, res) => {
         .catch(rp.default.fail);
 };
 
+
 const fetch = (req, res) => {
     const db = req.app.get("db");
     const rp = responseProvider(res);
     const {id} = req.params;
+    
+    //double not trick, turns undefined and other stuff to false
+    const render = !(!req.query.render) && (req.query.render!="false");
+
+    const renderFn = async (data) => {
+	    
+	const filepath = await pictureService().fileExists(data.url);
+	//filepath =path.resolve(data.url);
+	    
+	res.sendFile(filepath);
+    }
+    
+    const success = render? renderFn : rp.defaultSuccess;
 
     pictureService(db)
         .findOne(id)
-        .then(rp.defaultSuccess, rp.defaultFail);
+        .then(success, rp.defaultFail);
 };
 
 

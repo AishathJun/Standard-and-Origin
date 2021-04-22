@@ -55,16 +55,17 @@
             <li><a class="nav-link scrollto" href="home.html#contact">Contact Us</a></li>
 
             <!-- FILTER ALL ITEMS -->
-            <!--<form class="" action="product-list.html#" method="post"> -->
-              <div>
-              <li><a><input type="text" placeholder="Search.."  >
+            <form class="" action="product-list.html" method="get"> 
+              <li><a><input type="text" placeholder="Search.."  name="search" id="search">
                   <button class="search-items" id="search-item" >
                     <i class="bi bi-search"></i>
                   </button>
                   </a>
               </li>
+              <div class="dropdown-content" id="search-dropdown">
+		  <a href="#">Search all</a>
               </div>
-            <!--</form>-->
+            </form>
             <!-- END OF FILTER ALL ITEMS -->
 
           </ul>
@@ -100,10 +101,9 @@
   				<form class="navbar-form navbar-right form" action="/" method="get">
   					<input type="text" class="form-control" name="prod-name" placeholder="Search..." value="" id="txt-search">
   					<br>
-  					<select class="form-control" title="Brands" name="prod-brand" id="prod-brand">
-  						<option value="0_0" title="All Brands" selected="">-- All Brands --</option>
-  						<option value="1_0" title="cocacola">Coca Cola Company </option> <!-- loop these -->
-  					</select>
+					<div id="select-brand-container">
+					    <p>Loading</p>
+					</div>
   				</form>
   			</div>
 
@@ -159,10 +159,12 @@
 
   <script>
     const category_id = getParam("category_id");
-    const searchbar = document.getElementById("txt-search");
-    const productContainer = document.getElementById("product-container");
+    const search_query = { search: getParam("search"), filter: getParam("filter")};
+   const searchbar = document.getElementById("txt-search");
+   const navsearchbar = document.getElementById("search");
+   const productContainer = document.getElementById("product-container");   
     var glob_product_list = [];
-
+   
 
     const template = ({_id, name, url, brand, packaging, origin})=>`
               <div class="col-lg-4 col-md-6 mt-1" id=""> <!-- looping starts here -->
@@ -183,6 +185,13 @@
 `;
     const emptyTemplate = () => `<p>Sorry. No items available</p>`;
 
+   const selectOptionTemplate = (brand_list)=>  ((option_str) => `
+  	<select class="form-control" title="Brands" name="prod-brand" id="prod-brand" onchange="onSelectBrand()">
+  	  <option value="" title="All Brands" selected="">-- All Brands --</option>
+          ${option_str}
+  	</select>
+   `)(brand_list.map(brand=>`<option value="${brand.name}">${brand.name}</option>`).join(""));
+       
     function redrawProductList(product_list){
         if(product_list.length == 0){
             productContainer.innerHTML = ""; //clear product container first
@@ -192,10 +201,19 @@
         }
     }
 
+   /*
+   function toggleSearchDropDown(dropdown){
+       if(dropdown.style !== "block")
+	   dropdown.style="block";
+   }
 
+   function glob_search(val){
+       const dropdown = document.getElementById("search-dropdown");
+       dropdown.toggle()
+   }*/
 
     //["32131", "Hello World"] .map( e => e.toLowerCase().search("wo"))
-    function search(val){
+    function search(val, extraFilter=()=>true){
         var product_list = glob_product_list;
 
         if(val.length != 0){
@@ -207,19 +225,33 @@
                 return matchByName || matchByOrigin || matchByBrand || matchByPackaging;
             });
         }
-
-        redrawProductList(product_list);
+        redrawProductList(product_list.filter(extraFilter));
     }
 
-    //attach search to keyboard event
+   //attach search to keyboard event
     document.addEventListener('input', function(ev){
         const target_id = ev.target.id;
         if(target_id == "txt-search"){
             const val = ev.target.value;
             search(val);
         }
+
+	/*
+	if(target_id == "search"){
+	    const val = ev.target.value;
+	    glob_search(val);
+	}*/
     });
 
+
+
+   //filter items when brand is selected
+   function onSelectBrand(){
+       const brand_name = document.getElementById("prod-brand").value;
+       const searchbar = document.getElementById("txt-search").value; 
+       categoryFilter = e => !e.brand.toLowerCase().search(brand_name.toLowerCase());
+       search("", categoryFilter);
+   }
 
     //if the url contains a valid category id
     if(category_id != null){
@@ -229,6 +261,22 @@
                 glob_product_list = results.data;
             },
             {category_id}
+        );
+
+	SNOAPI.getBrandsByCategory(category_id, results => {
+	    const el = selectOptionTemplate(results.data);
+	    document.getElementById("select-brand-container").innerHTML = el;
+	});
+    }else if(search_query != null){
+	//remove the select brand option
+	document.getElementById("select-brand-container").innerHTML = "";
+	//fetch products with search query
+        SNOAPI.getProducts(
+            results => {
+                redrawProductList(results.data);
+                glob_product_list = results.data;
+            },
+	    {...search_query}
         );
     }
   </script>

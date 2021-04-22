@@ -1,7 +1,17 @@
 const db_error = require("./error.js").handle_db_error;
 //query response handlers
 
-const createQuery = (onSuccess, onFail) => (error, results, data=null) => {
+
+const processJSONKey = (result) => k => {
+    if(k.slice(-1)==='$'){
+	const newKey = k.slice(0, -1);
+	result[newKey] = JSON.parse(result[k])
+	delete result[k];
+    }
+};
+
+
+const createQuery = (onSuccess, onFail, data=null) => (error, results) => {
     if(db_error()(error,onFail)){
         return;
     }
@@ -38,13 +48,25 @@ const updateQuery =  (onSuccess, onFail, obj=null) => (error, results) => {
     }
 };
 
-const retrieveOneQuery =  (onSuccess, onFail) => (error, results) => {
+/**
+ * Process retrievd database query.
+ * Attributes ending with $ character will be parsed into json object from string.
+ **/
+const retrieveOneQuery =  (onSuccess, onFail, preprocess=null) => (error, results) => {
     if(db_error()(error,onFail)){
         return;
     }
-    if(results.length>0)
-        onSuccess(results[0]);
-    else{
+    if(results.length>0){
+	var result = results[0];
+
+	Object.keys(result).forEach(processJSONKey(result));
+
+	if(preprocess != null){
+	    result = preprocess(result);
+	}
+	
+        onSuccess(result);
+    }else{
         onFail({
             name: "Unable to find object",
             message: "Unable to find object. Object not found in database.",
@@ -58,6 +80,12 @@ const retrieveQuery = (onSuccess, onFail) => (error, results) => {
         return;
     }
 
+    if(results.length > 0){
+	results.map(result => {
+	    Object.keys(result).forEach(processJSONKey(result));
+	});
+    }
+    
     onSuccess(results);
 };
 
