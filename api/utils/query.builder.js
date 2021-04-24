@@ -1,4 +1,32 @@
-/**
+
+//This one's at top because im reusing this 
+const createConditions = (filtermap, userOptions={}) => {
+    const defaultOptions = {
+	operator: "AND",
+	comparator: "="
+    };
+    const options = {...defaultOptions,...userOptions};
+    var filter_arr = filtermap;
+    if(typeof(filtermap)==="object" && !Array.isArray(filtermap)){
+	filter_arr = Object.entries(filtermap);
+    }
+ return   filter_arr.map( (entry) => {
+    const {key, val} = {key: entry[0], val: entry[1]};
+    var tablename="";
+    if(options.tablename)
+	tablename = `\`${options.tablename}\`.`;
+    var valtable = "";
+    if(options.valueTable)
+	valtable = `\`${options.valueTable}\`.`
+     if(val[0]==="'" || val[0]==="$"){
+	 valtable="";
+	 //val=val.substr(1);
+     }
+    return ` ${tablename}${key} ${options.comparator} ${valtable}${val} `;
+   }).join(options.operator);
+}
+
+/**			 
  * I wrote this because I keep forgetting basic SQL syntax.
  * Do not layer it to build complex query or use an ORM.
  * Just write your own query.
@@ -32,14 +60,66 @@ const queryBuilder = (db) => ({
         return db.format(sql, vals);
     },
 
-    selectAll: (tablename, in_fields=[], options={offsets: 0, populate: false}) => {
-        var fieldsPlaceholder = "," + in_fields.map(field => field[0]=="$"?` CONVERT(??, CHAR(128)) as \`${field.substr(1)}\``: "??").join(",");
-        const fields = in_fields.map(field => field[0]=="$"?field.substr(1):field); //remove $ sign
+    selectAll: (tablename, in_fields=[], user_options={} )=> {
+	const defaultOptions={offsets: 0, populate: false, tablename, flat: false};
+	const options = {...defaultOptions, user_options};	
+	
+	const processFields =  (tablename) => field => {
+	    var ret="";
+	    if(typeof(field)==="object"){
+		const foreignFields = Object.keys(field)
+		      .map(key => {
+			  const joinedFields = field[key].map(processFields(key));
+
+			  if(!options.flat){
+			      const jo_create = [];
+			      field[key].forEach( (e,i) => {
+				  jo_create.push(`'${e}'`);
+				  jo_create.push(joinedFields[i]);
+			      });
+			      return `JSON_OBJECT(${jo_create}) AS '${key}\$'`;
+			  }
+			  return joinedFields;
+		      }).join(",");
+		return foreignFields;
+	    }
+
+	    //if function
+	    if(field.indexOf("(")!=-1){
+		return field;
+	    }
+	    ret = ` \`${tablename}\`.??`;
+	    if(options.flat && tablename !== options.tablename){
+		ret += ` AS '${tablename}_${field}'`;
+	    }
+	    if(field[0]=="$"){
+		ret = ` CONVERT(${ret}, CHAR(128)) as \`${field.substr(1)}\``;
+	    }    	    
+	    return ret;
+	};
+
+	const processFieldVals = field => {
+	    if(typeof(field) === "object"){
+		const foreignFields = Object.entries(field)
+		      .map( e=>  e[1].map(processFieldVals) );
+		return [].concat.apply([], foreignFields);
+	    }
+	    //ignore functions;
+	    if(field.indexOf("(")!=-1){
+		return;
+	    }
+	    return field[0]=="$"?field.substr(1):field
+	};	
+	
+        var fieldsPlaceholder = ","
+	    + in_fields.map(processFields(options.tablename)).filter(e=>!!e).join(",");
+        const fields = [].concat.apply([], in_fields.map(processFieldVals )).filter(e=>!!e); //remove $ sign
+	
         if(fields.length==0)
             fieldsPlaceholder = "";
-        const sql = "SELECT CONVERT(`_id`, CHAR(128)) as `_id` "
+        const sql = "SELECT CONVERT(`"+tablename+"`.`_id`, CHAR(128)) as '_id' "
                         +      fieldsPlaceholder
-                        +      " FROM ??;";
+                        +      " FROM ??";
         const queryVals = [...fields, tablename];
 
         return db.format(sql, queryVals);
@@ -109,6 +189,23 @@ const queryBuilder = (db) => ({
                 }
             });
     }),
+
+
+    /**
+     * Creates conditions from filter
+     **/
+    createConditions: createConditions, 
+
+    createJoin: (table, dst_table, conditions={},userOptions={}) => {
+	const defaultOptions = {
+	    type: "INNER",
+	    comparator: "=",
+	    conditionOptions: {tablename: table, valueTable: dst_table}
+	};	
+	const options = {...defaultOptions, ...userOptions};
+	const join_conds = createConditions(conditions, {tablename: table, valueTable: dst_table});
+	return `${options.type} JOIN \`${table}\` ON ${join_conds} `;
+    },
 
     /**
      * Executes queries as a transaction, linearly

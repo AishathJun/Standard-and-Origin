@@ -2,15 +2,18 @@ const express = require("express");
 const router = express.Router();
 
 const validatorModule = require("./middleware/validator.js");
+const authModule = require("./middleware/authentication.js");
 router.use(validatorModule);
+router.use(authModule);
 
 
 
-
+const authController = require("./auth.js")(router);
 const categoryController = require("./category.js")(router);
-const brandController = require("./brand.js")(router);
+const brandController = require("./brand.js").bind(router);
 const pictureController = require("./picture.js")(router); //for debug purpose
-const productController = require("./product.js")(router);
+const productController = require("./product.js").bind(router);
+const adminController = require("./controllers/admin.js")(router);
 
 
 //router.use(express.urlencoded({extended: true}));

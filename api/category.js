@@ -1,4 +1,5 @@
 const categoryService = require("./services/category.service.js");
+const brandService = require("./services/brand.service.js");
 const responseProvider = require("./utils/response.js");
 
 
@@ -8,6 +9,18 @@ const listCategory = (req, res) => {
 
     categoryService(db)
         .findAll()
+        .then(rp.default.success, rp.default.failure);
+};
+
+
+const listBrand = (req, res) => {
+    const db = req.app.get("db");
+    const rp = responseProvider(res);
+
+    const id = req.params.id;
+    
+    brandService(db)
+        .find({category: id})
         .then(rp.default.success, rp.default.failure);
 };
 
@@ -48,7 +61,7 @@ const findCategory = (req, res) => {
     const id = req.params.id;
 
     categoryService(db)
-        .fetch(id)
+        .fetch(id,true)
         .then(rp.success, rp.fail);
 };
 
@@ -79,9 +92,11 @@ const deleteCategory = (req, res) => {
         .catch(rp.fail);
 };
 
+
 module.exports = function(router){
     router.get("/category", listCategory);
     router.get("/category/:id", findCategory);
+    router.get("/category/:id/brand", listBrand);
     router.post("/category", createCategory);
     router.post("/category/:id", updateCategory);
     router.delete("/category/:id", deleteCategory);

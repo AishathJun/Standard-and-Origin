@@ -1239,3 +1239,32 @@ section {
   display:block;
   width:100%;
 }
+
+
+/**
+* Search drop down style
+**/
+.dropdown-content{
+    display:none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 10em;
+    width: auto;
+    margin-left: 2em;
+    z-index:1;    
+    /*
+    min-width: 230px;
+    border: 1px solid #ddd;
+    z-index: 1;*/
+	
+}
+
+.dropdown-content a{    
+    display: block;    
+    text-decoration: nnone;
+}
+
+
+.dropdown-content a:hover{
+    background-color: #f1f1f1;
+}

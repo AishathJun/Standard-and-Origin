@@ -14,16 +14,20 @@ function categoryServices(db){
      * Returns Success onSuccess(_id)
      **/
     const create = (vals) => new Promise( (onSuccess, onFail) => {
-        const {name, url, cost, tags} = vals;
+        const {name, url, picture, tags} = vals;
 
         db.beginTransaction(err => {
-            const insertQuery = "INSERT INTO picture (`_id`, `label`, `url`) VALUES (?, ?, ?)";
-            const picId = uuid();
-            const insertValues = [picId, name+"_picture", url];
-            const query = db.format(insertQuery, insertValues);
+	    var picId = uuid();
+	    var queryPicture = null;
+	    if(!picture._id){
+		const insertQuery = "INSERT INTO picture (`_id`, `label`, `url`) VALUES (?, ?, ?)";
+		const insertValues = [picId, name+"_picture", url];
+		const queryPicture = db.format(insertQuery, insertValues);
+	    }else{
+		picId = picture._id;
+	    }
 
-
-            db.query(query, (error, results, fields) => {
+	    const createProductCallback = (error, results, fields) => {
                 if(service_error(db, error, onFail))
                     return;
 
@@ -49,8 +53,13 @@ function categoryServices(db){
                             onSuccess(_id);
                     }); //db.commit
 
-                })
-            });
+                })//db.query (product)
+            };
+	    
+	    if(!picture._id)
+		db.query(queryPicture, createProductCallback);//db.query (picture)
+	    else
+		createProductCallback(false, [],[]);
 
         });
     });
@@ -59,9 +68,12 @@ function categoryServices(db){
         var sql = "SELECT CONVERT(`category`._id, CHAR(128)) AS _id, name, CONVERT(`pic`, CHAR(128)) AS pic FROM `category`  WHERE `category`.`_id` = ?;";
 
         if(fetch_assoc){
-            sql = "SELECT CONVERT(`category`._id, CHAR(128)) AS _id, name, picture.url FROM `category` INNER JOIN `picture` WHERE `category`.pic = `picture`._id AND `category`.`_id` = ?;";
-        }
+            sql = "SELECT CONVERT(`category`._id, CHAR(128)) AS _id, name, picture.url, JSON_OBJECT('_id', CONVERT(`picture`._id, CHAR(128)) )AS 'picture$', (SELECT COUNT(*) FROM `product` WHERE `product`.category = `category`._id) AS 'product_count' FROM `category` INNER JOIN `picture` WHERE `category`.pic = `picture`._id AND `category`.`_id` = ?;";
+	   
 
+        }
+//
+	
         const query = db.format(sql, [_id]);
 
         db.query(query, queryHandler.retrieveOneQuery(success, fail) );
@@ -86,13 +98,14 @@ function categoryServices(db){
                 throw new Error("Category not found.");
             }
 
+	    if(url){
             const pic_inVals = {url};
 
             await picService(db)
                 .update(category.pic, pic_inVals)
                 .then( r=> console.log("Done", r) )
                 .catch(fail);
-
+	    }
             category = await fetch(_id, true);
             db.query(query, queryHandler.updateQuery(success, fail, category));
         }catch(err){
@@ -118,7 +131,7 @@ function categoryServices(db){
     });
 
 
-    const findAll = ()=> new Promise( (onSuccess, onFail) => {
+    const find = (filter)=> new Promise( (onSuccess, onFail) => {
         const sqlQuery = "SELECT CONVERT(`category`._id, CHAR(128)) AS _id, name, picture.url FROM `category` INNER JOIN `picture` WHERE `category`.pic = `picture`._id;";
 
         db.query(sqlQuery,  (error, results, fields) => {
@@ -135,7 +148,8 @@ function categoryServices(db){
         fetch,
         update,
         remove,
-        findAll
+        find,
+	findAll: () => find()
     };
 };
 

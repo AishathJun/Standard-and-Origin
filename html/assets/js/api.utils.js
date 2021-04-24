@@ -28,6 +28,16 @@ const SNOAPI = {
          });
 
     },
+    getBrandsByCategory: (id, callback) => {
+	fetch("/api/category/"+id+"/brand", {
+	    "method": "GET",
+	    headers
+	}).then( r=> r.json() )
+	    .then(callback)
+	    .catch(err => {
+		console.error(err);
+	    });
+    },
     getProducts: (callback,opts={}) => {
         const options = "?"+new URLSearchParams({populate: true, ...opts}).toString();
         fetch("/api/product"+options, {

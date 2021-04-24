@@ -50,6 +50,8 @@ It may look something like this:
 }
 ```
 
+ng build
+
 # Developement notes
  - 'html' folder contains the static html and css files
 
