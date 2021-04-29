@@ -131,16 +131,58 @@ function categoryServices(db){
     });
 
 
-    const find = (filter)=> new Promise( (onSuccess, onFail) => {
+    const find = (options={})=> new Promise( (onSuccess, onFail) => {
+	const defaultOptions = {
+	    checkFileExist: false
+	};
+	const opts = {...defaultOptions, ...options};
         const sqlQuery = "SELECT CONVERT(`category`._id, CHAR(128)) AS _id, name, picture.url FROM `category` INNER JOIN `picture` WHERE `category`.pic = `picture`._id;";
 
+	var preprocessor=null;
+
+	preprocessor = async (results) => {
+	    //console.log(f);
+	    const promises = results.map(async row => {	
+		var fileExists = false;
+		try{
+		   fileExists =  await picService(db).fileExists(row.url);
+
+		    console.log(fileExists);
+		}catch(err){
+		    console.log(err); 
+		}
+		return {
+		    ...row,
+		    fileExists
+		};
+	    });
+	    return (await Promise.allSettled(promises)).map(r=>r.value);
+	};
+
+	db.query(sqlQuery,
+		 queryHandler.retrieveQuery(onSuccess, onFail, preprocessor)
+		);
+	
+	/*
         db.query(sqlQuery,  (error, results, fields) => {
             if(service_error(db, error, onFail))
                 return;
+    
+
+	    results = results.map(async row => {
+		const fileExists = picService(db)
+		      .fileExistsSync(row.url);
+		const f = await fileExists;
+		console.log(row);
+		return {
+		    a: 1
+		};
+	    });
+	    
 
             if(onSuccess)
                 onSuccess(results);
-        });
+        });*/
     });
 
     return {

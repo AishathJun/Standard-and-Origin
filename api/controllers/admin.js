@@ -45,6 +45,7 @@ const pictureService = require("../services/picture.service.js");
 const categoryService = require("../services/category.service.js");
 //const brandService = require("../services/brand.service.js");
 
+const categoryController = require("../category.js");
 const brandController = require("../brand.js");
 const productController = require("../product.js");
 
@@ -160,15 +161,47 @@ const deleteCategory = (req, res) => {
         .catch(rp.fail);
 };
 
+const listCategory = (req, res) => {
+    const db = req.app.get("db");
+    const rp = responseProvider(res);
+
+    categoryService(db)
+        .findAll({fileExists:true})
+        /*.then(results => {
+	    
+	    return results.map(row => {
+		//var fileExists =false;
+		//fileExists = await pictureService.fileExists(row.url);
+		//console.log("this", row);
+		return {
+		    ...row
+		};
+	    });
+	})*/
+        .then(rp.default.success, rp.default.failure);
+};
 
 
 
 module.exports = function(router){
+    router.use("/admin", (req, res, next) => {
+	if(req.session.type == 'admin'){
+	    next();
+	}else{
+	    res.status(401).json({
+		"message": "Unauthorized access"		
+	    });
+	}
+    });
     router.get("/admin", adminStatus);
     router.post("/admin/picture", upload.single('image'), uploadPicture);
     router.post("/admin/picture/:id", reuploadPicture);
+
+
+    const category_ctrl = categoryController.controllers;    
     
     //manage category
+    router.get("/admin/category", listCategory);
     router.post("/admin/category", createCategory);    
     router.post("/admin/category/:id", updateCategory);
     router.delete("/admin/category/:id", deleteCategory);

@@ -9,7 +9,7 @@ router.use(authModule);
 
 
 const authController = require("./auth.js")(router);
-const categoryController = require("./category.js")(router);
+const categoryController = require("./category.js").bind(router);
 const brandController = require("./brand.js").bind(router);
 const pictureController = require("./picture.js")(router); //for debug purpose
 const productController = require("./product.js").bind(router);
@@ -50,7 +50,7 @@ router.use(function (err, req, res, next){
  * 404 - page not found
  **/
 router.use( function(req, res, next){
-    res.json({
+    res.status(404).json({
         "message": "API endpoint not found"
     });
 });

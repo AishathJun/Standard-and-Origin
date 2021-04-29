@@ -49,14 +49,25 @@ function productServices(db){
         if(!opt.populate){
             const query = queryBuilder(db).selectBy("product", ["name", "$brand", "$pic", "packaging", "$category"], {_id});
             db.query(query, queryHandler.retrieveOneQuery(success, fail));
-        }else{
+        }else{	    
         //const query = qb.selectBy("product", ["name", "$brand", "$pic", "packaging", "$category"], {_id});
-            const sql = "SELECT CONVERT(`product`.`_id`, CHAR(128)) as _id, `product`.`name`, `brand`.`name` as brand, `brand`.`origin` as `origin`, `packaging`, `category`.`name` as `category`, CONVERT(`picture`._id , CHAR(128) ) AS pic, `picture`.`url` FROM  `product` "
+	    //foreign keys are [brand, picture, category]
+	    var fields = ["name", "packaging"];
+	    fields.push({"picture": ["_id", "url", "label", "base64", "data"]});	    
+	    fields.push({"brand": ["_id", "name", "origin"]});	    
+	    fields.push({"category": ["_id", "name"]});	    
+            const select_query = qb.selectAll("product", fields);
+	    const picture_join = qb.createJoin("picture", "product", {"_id": "pic"});
+	    const category_join = qb.createJoin("brand", "product", {"_id": "brand"});
+	    const brand_join = qb.createJoin("category", "product", {"_id": "category"});
+	    const join_query = `${picture_join} ${category_join} ${brand_join}`;
+	    const sql = `${select_query} ${join_query} WHERE \`product\`.\`_id\` = ? `;
+            /*const sql = "SELECT CONVERT(`product`.`_id`, CHAR(128)) as _id, `product`.`name`, `brand`.`name` as brand, `brand`.`origin` as `origin`, `packaging`, `category`.`name` as `category`, CONVERT(`picture`._id , CHAR(128) ) AS pic, `picture`.`url` FROM  `product` "
                   + " INNER JOIN `picture` ON `product`.`pic` = `picture`.`_id` "
                   + " INNER JOIN `brand` ON `product`.`brand` = `brand`.`_id` "
                   + " INNER JOIN `category` ON `product`.`category` = `category`.`_id`"
                   +  " WHERE `product`.`_id` = ? "
-            ;
+            ;*/
 
             const query = db.format(sql, [_id]);
             db.query(query, queryHandler.retrieveOneQuery(success, fail));

@@ -75,7 +75,7 @@ const retrieveOneQuery =  (onSuccess, onFail, preprocess=null) => (error, result
     }
 };
 
-const retrieveQuery = (onSuccess, onFail) => (error, results) => {
+const retrieveQuery = (onSuccess, onFail, preprocess=null) => (error, results) => {
     if(db_error()(error,onFail)){
         return;
     }
@@ -84,6 +84,10 @@ const retrieveQuery = (onSuccess, onFail) => (error, results) => {
 	results.map(result => {
 	    Object.keys(result).forEach(processJSONKey(result));
 	});
+    }
+
+    if(preprocess != null){
+	results = preprocess(results);
     }
     
     onSuccess(results);

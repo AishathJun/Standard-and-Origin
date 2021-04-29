@@ -14,18 +14,29 @@ const checkFileExist = (img_path) => new Promise( (success, fail ) => {
 	const path_list = ["", "html"];
 	const result = path_list.map( root_path => {
 	    const filepath = path.resolve(root_path, img_path);
-	    fs.access(filepath, error => {
-		if(error){
-		    return false;
-		}
-		success(filepath);
-	    });
+	    try{
+		const fileRet = fs.accessSync(filepath, fs.constants.F_OK);
+		return filepath;
+	    }catch(err){
+	    }
+	    return false;
 	}).reduce( (a,b) => a || b);
-	
 	if(result==false){ 
 	    fail("Cannot find file ", img_path);
-	};
+	}else{
+	    success(result);
+	}
 });
+
+const fileExistsSync = async (img_path) => {
+    try{
+	const ret = await checkFileExist(img_path);
+	return ret;
+    }catch(err){
+    }
+
+    return false;
+};
 
 const getMetadata = (fullpath, result) => new Promise( (success, fail) => {
     sharp(fullpath).metadata()
@@ -56,7 +67,8 @@ module.exports = (db={}) => ({
         db.query(query, queryHandler.createQuery(success, fail, insertId));
     }),
 
-    fileExists: checkFileExist, 
+    fileExists: checkFileExist,
+    fileExistsSync: fileExistsSync,
 
     list: () => new Promise( (success, fail) => {
         const sql = "SELECT CONVERT(_id, CHAR(128)) AS _id, created_at, url, base64, data, label FROM `picture` LIMIT 0, 100;"
@@ -93,7 +105,7 @@ module.exports = (db={}) => ({
 	    return {
 		...result,
 		metadata: await getMetadata(fullpath, result),
-		fileExists: !!fullpath
+		fileExists: !fullpath
 	    };
 	};
 	

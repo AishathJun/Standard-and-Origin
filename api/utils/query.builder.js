@@ -125,7 +125,7 @@ const queryBuilder = (db) => ({
         return db.format(sql, queryVals);
     },
 
-    selectBy: (tablename, in_fields=[], conds, options={offset:0, populate:false}) => {
+    selectBy: (tablename, in_fields=[], conds, options={offset:0, populate:false, terminator: true}) => {
         var fieldsPlaceholder = "," + in_fields.map(field => field[0]=="$"?` CONVERT(??, CHAR(128)) as \`${field.substr(1)}\``: "??").join(",");
         const fields = in_fields.map(field => field[0]=="$"?field.substr(1):field); //remove $ sign
         const condsEntries = Object.entries(conds);
@@ -136,7 +136,7 @@ const queryBuilder = (db) => ({
             fieldsPlaceholder = "";
         const sql = "SELECT CONVERT(`_id`, CHAR(128)) as `_id` "
                         +      fieldsPlaceholder
-                        +      " FROM ?? WHERE "+ condsPlaceholder +";";
+              +      " FROM ?? WHERE "+ condsPlaceholder + (options.terminator?";":"");
         const queryVals = [...fields, tablename, ...condsMap];
 
         return db.format(sql, queryVals);

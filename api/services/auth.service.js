@@ -6,7 +6,9 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const jwt = require("jsonwebtoken");
-const jwt_opts =  { expiresIn: '1h' };
+//const jwt_opts =  { expiresIn: '1h' };
+const refresh_token_opts = { expiresIn: "7 days" };
+const jwt_opts =  { expiresIn: '15m' };
 
 const config = require("../config.js");
 const secret_key = config.secret_key || "1234";
@@ -60,10 +62,16 @@ function userServices(db){
 	});
     };
 
-    const refresh = (token, onSuccess, onFail) => {	
-	const decodePromise = _token => new Promise( (s,f) => decode(_token, s, f) );
-	decodePromise(token)
-	    .then( payload => {
+
+    const refresh = (refresh_token, onSuccess, onFail) => {	
+	const decodePromise = _token => new Promise( (s,f) => decode(_token, s, f) );	
+	decodePromise(refresh_token)
+	    .then( refresh_payload => {
+		//{type: "refresh_token", payload}
+		if(refresh_payload.type !== "refresh_token")
+		    onFail("Not a valid refresh token");
+		const {payload} = refresh_payload;
+
 		delete payload.iat;
 		delete payload.exp;
 		delete payload.nbf;
@@ -73,7 +81,11 @@ function userServices(db){
 		    if(err)
 			onFail(err);
 		    
-		    onSuccess(token);
+		    const new_refresh_token = jwt.sign({type: "refresh_token", payload}, secret_key, refresh_token_opts);		    
+		    onSuccess({
+			refresh_token: new_refresh_token,
+			token
+		    });
 		});
 	    }).catch(err => {
 		onFail(err)
@@ -93,12 +105,16 @@ function userServices(db){
 		    onFail(err);		
 
 		if(result){ //password verify success
+		    const refresh_token = jwt.sign({type: "refresh_token", payload}, secret_key, refresh_token_opts);		    
 
 		jwt.sign(payload, secret_key, jwt_opts, (err, token) => {
 		    if(err)
 			onFail(err);
-		    
-		    onSuccess(token);
+		    		    
+		    onSuccess({
+			token,
+			refresh_token
+		    });
 		});
 
 		}else{
@@ -117,7 +133,7 @@ function userServices(db){
     const remove;*/
     
     return {
-	refresh: (token) => new Promise( (s, f) => refresh(token, s, f) ),
+	refresh: (refresh_token) => new Promise( (s, f) => refresh(refresh_token, s, f) ),
 	decode: (token) => new Promise( (s, f) => decode(token, s, f) ) ,
 	retrieve: (_id) => new Promise( (s,f) => retrieve(_id, s,f ) ),
 	list: () => new Promise( (s,f) => list(s,f) ),

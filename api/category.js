@@ -93,11 +93,20 @@ const deleteCategory = (req, res) => {
 };
 
 
-module.exports = function(router){
-    router.get("/category", listCategory);
-    router.get("/category/:id", findCategory);
-    router.get("/category/:id/brand", listBrand);
-    router.post("/category", createCategory);
-    router.post("/category/:id", updateCategory);
-    router.delete("/category/:id", deleteCategory);
+module.exports = {
+    bind: function(router){
+	router.get("/category", listCategory);
+	router.get("/category/:id", findCategory);
+	router.get("/category/:id/brand", listBrand);
+	router.post("/category", createCategory);
+	router.post("/category/:id", updateCategory);
+	router.delete("/category/:id", deleteCategory);
+    },
+    controllers: {
+	list: listCategory,
+	create: createCategory,
+	remove: deleteCategory,
+	fetch: findCategory,
+	update: updateCategory
+    }
 };

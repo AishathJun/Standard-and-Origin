@@ -20,7 +20,8 @@ const login = (req, res) => {
 	.authenticate(data)
 	.then((token) => {
 	    res.json({
-		access_token: token,
+		access_token: token.token,
+		refresh_token: token.refresh_token,
 		type: "Bearer"
 	    });
 	}, rp.fail);
@@ -62,10 +63,17 @@ const loginState = (req, res) => {
 
 const refresh = (req, res) => {
     const rp = responseProvider(res).default;
+    const data = req.body;    
     if(req.session && req.session.type){
 	authService()
-	    .refresh(req.token)
-	    .then(rp.success, rp.fail);
+	    .refresh(data.refresh_token)
+	    .then((token) => {
+		res.json({
+		    access_token: token.token,
+		    refresh_token: token.refresh_token,
+		    type: "Bearer"
+		})
+	    }, rp.fail);
     }else{
 	res.status(401).json({
 	    message: "Cannot refresh. No user logged in."
@@ -78,5 +86,5 @@ module.exports = function(router){
     router.get("/login", loginState);
     router.post("/login", login);
     router.post("/login/create", register);
-    router.get("/login/refresh", refresh);
+    router.post("/login/refresh", refresh);
 }
