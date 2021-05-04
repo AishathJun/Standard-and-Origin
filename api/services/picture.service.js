@@ -100,12 +100,16 @@ module.exports = (db={}) => ({
         const sql = "SELECT CONVERT(_id, CHAR(128)) AS _id, created_at, url, base64, data, label FROM `picture` WHERE `_id` = ? LIMIT 0, 100;"
         const vals = [_id];
         const query = db.format(sql, vals);
-	const preprocessor = async (result) => {	   	    
-	    const fullpath = await checkFileExist(result.url);
+	const preprocessor = async (result) => {
+	    var fullpath=false;
+	    try{
+		fullpath = await checkFileExist(result.url);
+	    }catch(err){		
+	    }
 	    return {
 		...result,
-		metadata: await getMetadata(fullpath, result),
-		fileExists: !fullpath
+		metadata: fullpath?await getMetadata(fullpath, result):{},
+		fileExists: !!fullpath
 	    };
 	};
 	

@@ -1,18 +1,46 @@
 const queryBuilder = require("../utils/query.builder.js");
 const queryHandler = require("../utils/query.js");
 const uuid = require("../db.service.js").helpers.uuid;
+const picService = require("./picture.service.js");
 
 function productServices(db){
     const findAll = (options={}) => new Promise( (success, fail ) => {
-        const defaultOptions = {populate: false, offset:0, limit: 100};
+        const defaultOptions = {populate: false, checkFileExists: false, offset:0, limit: 100};
         const opt = {...defaultOptions, ...options};
 
 
+	var preprocessor = null;
+	if(options.checkFileExists){
+	    preprocessor = async (results) => {
+		const promises = results
+		.map(async row => {	
+		    var fileExists = false;
+		    const rowUrlExists = !!row.url;
+		    
+		    try{
+			if(!rowUrlExists){
+			    const pictureData = await picService(db).findOne(row.pic);
+			    fileExists = pictureData.fileExists;
+			}else{
+			    fileExists =  !!(await picService(db).fileExists(row.url));
+			}
+		    }catch(err){
+			//console.log(err); 
+		    }
+		    return {
+			...row,
+			fileExists
+		    };
+		});
+		return (await Promise.allSettled(promises)).map(r=>r.value);
+	    };
+	}
+
         if(!opt.populate){
             const query = queryBuilder(db).selectAll("product", ["name", "$brand", "$pic", "packaging", "$category"]);
-            db.query(query, queryHandler.retrieveQuery(success, fail));
+            db.query(query, queryHandler.retrieveQuery(success, fail, preprocessor));
         }else{
-            var sql = "SELECT CONVERT(`product`.`_id`, CHAR(128)) as _id, `product`.`name`, `brand`.`name` as brand, `brand`.`origin` as `origin`,  `packaging`, `category`.`name` as `category`, `picture`.`url` FROM  `product` "
+            var sql = "SELECT CONVERT(`product`.`_id`, CHAR(128)) as _id, `product`.`name`, `brand`.`name` as brand, `brand`.`origin` as `origin`,  `packaging`, `category`.`name` as `category`, `picture`.`url` as `url` FROM  `product` "
               + " INNER JOIN `picture` ON `product`.`pic` = `picture`.`_id` "
               + " INNER JOIN `brand` ON `product`.`brand` = `brand`.`_id` "
               + " INNER JOIN `category` ON `product`.`category` = `category`.`_id`";
@@ -36,7 +64,9 @@ function productServices(db){
                     sql += ` OR  \`category\`.\`name\` LIKE '%${options.search}%'`;
 		}
 	    }
-            db.query(sql, queryHandler.retrieveQuery(success, fail));
+
+	    
+            db.query(sql, queryHandler.retrieveQuery(success, fail, preprocessor));
         }
     });
 

@@ -5,8 +5,17 @@ const fs = require('fs');
 
 const createStorage = (directory="", filename=null) =>  ({
     storage: multer.diskStorage({
-    destination: function(req, file, callback){
-	callback(null, "uploads/"+directory);
+    destination: function(req, file, callback){	
+	if(directory[0] === '/'){
+	    //use absolute path
+	    callback(null, directory)
+	}else{
+	    const resolved_path = path.resolve("uploads/"+directory);
+	    if(!fs.existsSync(resolved_path)){
+		fs.mkdirSync(resolved_path, { recursive: true });
+	    }
+	    callback(null, "uploads/"+directory);
+	}
     },
     filename: function(req, file, callback){
 	if(filename){
@@ -43,6 +52,7 @@ var upload = multer(createStorage());
 const authService = require("../services/auth.service.js");
 const pictureService = require("../services/picture.service.js");
 const categoryService = require("../services/category.service.js");
+const productService = require("../services/product.service.js");
 //const brandService = require("../services/brand.service.js");
 
 const categoryController = require("../category.js");
@@ -57,44 +67,121 @@ const adminStatus = (req, res) => {
 
 const uploadPicture = (req, res) => {
     const db = req.app.get("db");
-    const rp = responseProvider(res).default;    
-    const data = req.file;
-    
-    const createData = {
-	label: data.filename,
-	url: data.path
-    };
-    
-    pictureService(db)
-        .create(createData)
-        .then((results) => {
-	    res.json(
-		results
-	    );
-	}, rp.fail);
+    const options = req.query;
 
-}
+    var _dir = "";
+    if(options.type && typeof(options.type)==='string'){
+	_dir = options.type;
+    }
+    const upload = multer(createStorage(_dir)).single("image");
 
-const reuploadPicture = async (req, res) => {
-    const db = req.app.get("db");
-    const rp = responseProvider(res).default;    
-
-    const id = req.params.id;
-    const picture = await pictureService(db).findOne(id);
-
-    //const reupload = multer(createStorage("",
-    const reupload = multer(createStorage("", picture.url.split("/")[1])).single("image");
-    
-    reupload(req, res, (err)=>{
+    upload(req, res, err => {
 	if(err){
 	    res.json(err);
 	    return;
 	}
-	res.json({
-	    picture,
-	    data: null
-	});
+
+	const data = req.file;
+	const rp = responseProvider(res).default;    
+	
+    
+	const createData = {
+	    label: data.filename,
+	    url: data.path
+	};
+
+	pictureService(db)
+            .create(createData, options)
+            .then((results) => {
+		res.json(
+		    results
+		);
+	    }, rp.fail);
     })
+}
+
+const reuploadPicture = (req, res) => {
+    const db = req.app.get("db");
+    const rp = responseProvider(res).default;    
+
+    const id = req.params.id;
+
+
+    const options = req.query;
+
+    var _dir = "";
+    if(options.type && typeof(options.type)==='string'){
+	_dir = options.type;
+    }
+    
+    
+    pictureService(db).findOne(id)
+	.then( async picture => {
+	    picture.dir=""; //old path 
+	    picture.replace = false;
+	    //const path_arr = picture.url.split("/");
+	    //file exists and exists in assets folder
+	    if(picture.fileExists && picture.url && picture.url.split("/")[0]==="assets"){
+		picture.dir = await pictureService(db).fileExists(picture.url);
+		picture.replace = true;
+	    }	    
+	    //file doesnt exist but is supposed to be in  assets folder
+	    if(!picture.fileExists && picture.url && picture.url.split("/")[0]==="assets"){
+		picture.replace = true;
+		//todo mark the selected picture object for removal.
+	    }
+
+	    //picture is elsewhere. We havent decided what to do for this use case. for now we just keep the old image.
+	    if(!picture.fileExists && picture.url && _dir !== "" &&  picture.url.split("/")[0]==="uploads"){
+		picture.replace = true;
+	    }
+	    return picture;
+	})
+	.then ( picture => {
+	    //const reupload = multer(createStorage("",
+	    const _dir_arr = picture.url.split("/");
+	    const _fname = _dir_arr[_dir_arr.length-1]
+	    picture.reupload = multer(createStorage(_dir, _fname )).single("image");
+	    const old_url = picture.url;
+	    picture.url = ["uploads", _dir, _fname].join("/");
+	    if(picture.url !== old_url){
+		picture.replace = true;
+	    }
+	    return picture;
+	}).then( async picture => {
+	    if(picture.replace){
+		if(_dir !== ""){
+		    _dir = _dir + "/";
+		}
+		return await pictureService(db).update(picture._id, {
+		    url: picture.url
+		}).then(() => {
+		    return picture;
+		});
+	    }else{
+		return picture;
+	    }
+	}).then(picture => {
+	    const reupload = picture.reupload;
+	    delete picture.dir;
+	    delete picture._name;
+	    delete picture.replace;
+	    delete picture.reupload;
+	    
+	    reupload(req, res, (err)=>{
+		if(err){
+		    res.json(err);
+		    return;
+		}
+		res.json({
+		    picture,
+		    data: null
+		});
+	    })
+	}).catch(err => {
+	    console.log("Error", err);
+	    res.status(500).send("Sorry");
+	});
 };
 
 const createCategory =  async (req, res) => {
@@ -166,7 +253,7 @@ const listCategory = (req, res) => {
     const rp = responseProvider(res);
 
     categoryService(db)
-        .findAll({fileExists:true})
+        .findAll({checkFileExist:true})
         /*.then(results => {
 	    
 	    return results.map(row => {
@@ -183,6 +270,19 @@ const listCategory = (req, res) => {
 
 
 
+const listProduct = (req, res) => {
+    const db = req.app.get("db");
+    const rp = responseProvider(res).default;
+
+    const options = req.query;
+
+    productService(db)
+        .findAll(options)
+        .then(rp.success, rp.fail);
+};
+
+
+
 module.exports = function(router){
     router.use("/admin", (req, res, next) => {
 	if(req.session.type == 'admin'){
@@ -194,7 +294,7 @@ module.exports = function(router){
 	}
     });
     router.get("/admin", adminStatus);
-    router.post("/admin/picture", upload.single('image'), uploadPicture);
+    router.post("/admin/picture", uploadPicture);
     router.post("/admin/picture/:id", reuploadPicture);
 
 
@@ -215,7 +315,7 @@ module.exports = function(router){
     router.post("/admin/brand/:id", brand_fn.update);
 
     const _product = productController.controllers;     
-    router.get("/admin/product", _product.list);
+    router.get("/admin/product", listProduct);
     router.post("/admin/product", _product.create);
     router.get("/admin/product/:id", _product.retrieve);
     router.post("/admin/product/:id", _product.update);

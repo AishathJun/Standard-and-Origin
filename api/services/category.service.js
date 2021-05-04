@@ -37,7 +37,8 @@ function categoryServices(db){
                 const queryProduct = db.format(queryProductSQL, queryProductValues);
 
                 db.query(queryProduct, (error, results)=> {
-                    if(service_error(db, error, onFail)){
+                    //if(service_error(db, error, onFail)){
+		    if(db_error()(error, onFail)){
                         return;
                     }
 
@@ -103,7 +104,7 @@ function categoryServices(db){
 
             await picService(db)
                 .update(category.pic, pic_inVals)
-                .then( r=> console.log("Done", r) )
+                .then( r=> r )
                 .catch(fail);
 	    }
             category = await fetch(_id, true);
@@ -140,16 +141,15 @@ function categoryServices(db){
 
 	var preprocessor=null;
 
+	if(opts.checkFileExist){
 	preprocessor = async (results) => {
 	    //console.log(f);
 	    const promises = results.map(async row => {	
 		var fileExists = false;
 		try{
-		   fileExists =  await picService(db).fileExists(row.url);
-
-		    console.log(fileExists);
+		    fileExists =  !!(await picService(db).fileExists(row.url));
 		}catch(err){
-		    console.log(err); 
+		    //console.log(err); 
 		}
 		return {
 		    ...row,
@@ -158,6 +158,8 @@ function categoryServices(db){
 	    });
 	    return (await Promise.allSettled(promises)).map(r=>r.value);
 	};
+	}
+	    
 
 	db.query(sqlQuery,
 		 queryHandler.retrieveQuery(onSuccess, onFail, preprocessor)
@@ -191,7 +193,7 @@ function categoryServices(db){
         update,
         remove,
         find,
-	findAll: () => find()
+	findAll: (options={}) => find(options)
     };
 };
 

@@ -2,7 +2,9 @@ const dbService = require("../api/db.service.js");
 const category_service = require("../api/services/category.service.js");
 const brand_service = require("../api/services/brand.service.js");
 const product_service = require("../api/services/product.service.js");
+const auth_service = require("../api/services/auth.service.js");
 const import_script = require("./import_data.js");
+const create_admin_script = require("./create-admin.js");
 const cli_progress = require("cli-progress");
 
 const progress_service = function(){
@@ -25,6 +27,7 @@ const services = {
     brand: brand_service,
     category: category_service,
     product: product_service,
+    user: auth_service,
     progress: progress_service()
 };
 
@@ -38,6 +41,9 @@ if(cmd_args.length == 0){
     const cmd = cmd_args[0];
 
     switch(cmd){
+    case "create-admin":
+	create_admin_script(services);
+	break;
     case "import":
         import_script(services);
         break;
