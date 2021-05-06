@@ -19,10 +19,10 @@ function categoryServices(db){
         db.beginTransaction(err => {
 	    var picId = uuid();
 	    var queryPicture = null;
-	    if(!picture._id){
+	    if(!picture){
 		const insertQuery = "INSERT INTO picture (`_id`, `label`, `url`) VALUES (?, ?, ?)";
 		const insertValues = [picId, name+"_picture", url];
-		const queryPicture = db.format(insertQuery, insertValues);
+		queryPicture = db.format(insertQuery, insertValues);
 	    }else{
 		picId = picture._id;
 	    }
@@ -57,7 +57,7 @@ function categoryServices(db){
                 })//db.query (product)
             };
 	    
-	    if(!picture._id)
+	    if(queryPicture != null)
 		db.query(queryPicture, createProductCallback);//db.query (picture)
 	    else
 		createProductCallback(false, [],[]);

@@ -44,7 +44,7 @@ const insertCategories = (services, category_csv_path) => new Promise( async (su
                     resolve(res);
                 })
                 .catch( (err)=> {
-                    //console.error(err);
+                    console.error(err);
                     if(callback)
                         callback(err);
                     reject(err);
@@ -96,6 +96,7 @@ const insertBrands = (services, path) =>  new Promise(async (success, fail) => {
                         resolve(res);
                     } )
                     .catch(err => {
+			console.error("Cannot create brand", err);
                         reject(err);
                     });
             });
@@ -142,13 +143,12 @@ const insertProducts = (services, path) => new Promise( (success, fail) => {
                           .then( res => {
                               if(callback)
                                   callback(res);
-                              //console.log(res);
                               resolve(res);
                           } )
                           .catch( err => {
                               if(callback)
                                   callback(err);
-                              //console.error("error", err);
+                              console.error("error", err);
                               reject(err);
                           } )
                   });
@@ -162,8 +162,8 @@ const insertProducts = (services, path) => new Promise( (success, fail) => {
 });
 
 const createBrandAndCategory = (services) => new Promise(async (resolve, reject) => {
-    const category_csv_path = path.resolve(__dirname, "../../", "category.csv");
-    const brand_csv_path = path.resolve(__dirname, "../../", "brand_origin_list.csv");
+    const category_csv_path = path.resolve(__dirname, "../data", "category.csv");
+    const brand_csv_path = path.resolve(__dirname, "../data", "brand_origin_list.csv");
 
     const brand_promises = await insertBrands(services, brand_csv_path);
     const category_promises = await insertCategories(services, category_csv_path);
@@ -195,7 +195,7 @@ const createBrandAndCategory = (services) => new Promise(async (resolve, reject)
 });
 
 const createProduct = (services) => new Promise( async (resolve, reject) => {
-    const product_csv_path = path.resolve(__dirname, "../../", "product_list_sno.csv");
+    const product_csv_path = path.resolve(__dirname, "../data", "product_list_sno.csv");
 
     const product_promises_fn = await insertProducts(services, product_csv_path);
 
