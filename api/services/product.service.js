@@ -117,7 +117,7 @@ function productServices(db){
             const categoryFetchQuery = qb.selectBy("category", [], category);
             const results = await qb.queryPromise(categoryFetchQuery);
             if(results.length == 0){
-                fail("Cannot find category");
+                fail("Cannot find category: "+ category.name);
                 //return;
             }else{
                 val.category = results[0]._id;
