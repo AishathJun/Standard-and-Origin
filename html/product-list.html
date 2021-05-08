@@ -218,10 +218,10 @@
 
         if(val.length != 0){
             product_list = glob_product_list.filter(e => {
-                const matchByName = !e.name.toLowerCase().search(val.toLowerCase());
-                const matchByOrigin = !e.origin.toLowerCase().search(val.toLowerCase());
-                const matchByBrand = !e.brand.toLowerCase().search(val.toLowerCase());
-                const matchByPackaging = !e.packaging.toLowerCase().search(val.toLowerCase());
+		    const matchByName = e.name.toLowerCase().search(val.toLowerCase()) > 0 ;
+		    const matchByOrigin = e.origin.toLowerCase().search(val.toLowerCase()) > 0;
+		    const matchByBrand = e.brand.toLowerCase().search(val.toLowerCase()) > 0;
+		    const matchByPackaging = e.packaging.toLowerCase().search(val.toLowerCase()) > 0;
                 return matchByName || matchByOrigin || matchByBrand || matchByPackaging;
             });
         }
