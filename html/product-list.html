@@ -10,7 +10,7 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favsno.PNG" rel="icon">
+  <link href="assets/img/favsno.png" rel="icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
@@ -55,7 +55,7 @@
             <li><a class="nav-link scrollto" href="home.html#contact">Contact Us</a></li>
 
             <!-- FILTER ALL ITEMS -->
-            <form class="" action="product-list.html" method="get"> 
+            <form class="" action="product-list.html" method="get">
               <li><a><input type="text" placeholder="Search.."  name="search" id="search">
                   <button class="search-items" id="search-item" >
                     <i class="bi bi-search"></i>
@@ -162,9 +162,9 @@
     const search_query = { search: getParam("search"), filter: getParam("filter")};
    const searchbar = document.getElementById("txt-search");
    const navsearchbar = document.getElementById("search");
-   const productContainer = document.getElementById("product-container");   
+   const productContainer = document.getElementById("product-container");
     var glob_product_list = [];
-   
+
 
     const template = ({_id, name, url, brand, packaging, origin})=>`
               <div class="col-lg-4 col-md-6 mt-1" id=""> <!-- looping starts here -->
@@ -191,7 +191,7 @@
           ${option_str}
   	</select>
    `)(brand_list.map(brand=>`<option value="${brand.name}">${brand.name}</option>`).join(""));
-       
+
     function redrawProductList(product_list){
         if(product_list.length == 0){
             productContainer.innerHTML = ""; //clear product container first
@@ -248,7 +248,7 @@
    //filter items when brand is selected
    function onSelectBrand(){
        const brand_name = document.getElementById("prod-brand").value;
-       const searchbar = document.getElementById("txt-search").value; 
+       const searchbar = document.getElementById("txt-search").value;
        categoryFilter = e => !e.brand.toLowerCase().search(brand_name.toLowerCase());
        search("", categoryFilter);
    }
