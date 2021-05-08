@@ -122,7 +122,9 @@ const insertProducts = (services, path) => new Promise( (success, fail) => {
     fs.createReadStream(path)
           .pipe(parse({headers: true}))
           .on("data", row => {
-              if(row["img-status"] == "Completed"){
+              if(row["img-status"] == "Completed"||
+	        row["img status"] == "Completed"
+	      ){		      
                   const data = {
                       name: row["Product Name"],
                       brand: {
