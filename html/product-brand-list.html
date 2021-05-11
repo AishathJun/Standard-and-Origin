@@ -44,8 +44,8 @@
           <ul>
             <li><a class="nav-link scrollto" href="home.html#hero">Home</a></li>
             <li><a class="nav-link scrollto" href="home.html#about">About Us</a></li>
-            <li><a class="nav-item active" href="product-categories.html">Products</a></li>
-            <li><a class="nav-item" href="product-brand.html">Brands</a></li>
+            <li><a class="nav-item" href="product-categories.html">Products</a></li>
+            <li><a class="nav-item active" href="product-brand.html">Brands</a></li>
             <li><a class="nav-item" href="outlets.html">Outlets</a></li>
             <li class="dropdown"><a href="#"><span>More</span> <i class="bi bi-chevron-down"></i></a>
               <ul>
@@ -56,7 +56,7 @@
             <li><a class="nav-link scrollto" href="home.html#contact">Contact Us</a></li>
 
             <!-- FILTER ALL ITEMS -->
-            <form class="" action="product-list.html" method="get">
+            <form class="" action="product-brand-list.html" method="get">
               <li><a><input type="text" placeholder="Search.."  name="search" id="search">
                   <button class="search-items" id="search-item" >
                     <i class="bi bi-search"></i>
@@ -64,7 +64,7 @@
                   </a>
               </li>
               <div class="dropdown-content" id="search-dropdown">
-		  <a href="#">Search all</a>
+		              <a href="#">Search all</a>
               </div>
             </form>
             <!-- END OF FILTER ALL ITEMS -->
@@ -84,11 +84,11 @@
       <div class="container">
 
         <div class="d-flex justify-content-between align-items-center">
-          <h2>Product Type</h2>
+          <h2>{{BRAND NAME}}</h2>   <!-- INSEART BRAND NAME HERE PLIS -->
           <ol>
             <li><a href="home.html">Home</a></li>
-            <li><a href="product-categories.html">Categories</a></li>
-            <li>Product Type</li>
+            <li><a href="product-brand.html">Brand</a></li>
+            <li>Product</li>
           </ol>
         </div>
 
@@ -112,7 +112,6 @@
         <section id="prod-category" class="prod-category">
           <div class="container">
             <div class="row" id="product-container">
-
 
               <!--Show loading if data is not loaded-->
               <div class="spinner-border" role="status">
@@ -158,6 +157,8 @@
   <!--Provides some common functions to make the scripts more readable -->
   <script src="assets/js/api.utils.js"></script>
 
+
+<!-- MAKE CHANGES FOR THE PRODUCTS BASED ON BRAND -->
   <script>
     const category_id = getParam("category_id");
     const search_query = { search: getParam("search"), filter: getParam("filter")};
@@ -186,12 +187,15 @@
 `;
     const emptyTemplate = () => `<p>Sorry. No items available</p>`;
 
+
+// REMOVE DROP DOWN LIST
    const selectOptionTemplate = (brand_list)=>  ((option_str) => `
   	<select class="form-control" title="Brands" name="prod-brand" id="prod-brand" onchange="onSelectBrand()">
   	  <option value="" title="All Brands" selected="">-- All Brands --</option>
           ${option_str}
   	</select>
    `)(brand_list.map(brand=>`<option value="${brand.name}">${brand.name}</option>`).join(""));
+// REMOVE DROP DOWN LIST
 
     function redrawProductList(product_list){
         if(product_list.length == 0){
